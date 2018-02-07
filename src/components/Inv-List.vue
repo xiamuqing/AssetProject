@@ -63,8 +63,8 @@
           <el-switch v-model="detailedFormDat.img"> </el-switch>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('detailedFormDat')">搜索</el-button>
-          <el-button @click="resetForm('detailedFormDat')">重置</el-button>
+          <el-button type="primary" @click="submitFormFuc('detailedFormDat')">搜索</el-button>
+          <el-button @click="resetFormFuc('detailedFormDat')">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -75,7 +75,7 @@
       <router-link to="Inv-Details">
         <router-link to="/InvBuild"><el-button type="primary" plain id="addAssBtn" size="mini">新增资产</el-button></router-link>
       </router-link>
-      <el-table  ref="multipleTable" :data="assetList" max-height="500" border style="width: 100%" tooltip-effect="dark" @selection-change="handleSelectionChange">
+      <el-table  ref="multipleTable" :data="assetList" max-height="500" border style="width: 100%" tooltip-effect="dark" @selection-change="selectAssetChangeFuc">
         <el-table-column type="selection" width="55" > </el-table-column>
         <el-table-column prop="adcode" label="编号" fixed>
           <template slot-scope="scope">
@@ -93,7 +93,7 @@
         <el-table-column prop="" label="省份"> </el-table-column>
         <el-table-column prop="" label="供应商"> </el-table-column>
         <el-table-column prop="" label="型号"> </el-table-column>
-        <el-table-column prop="level" label="状态" width="100" :filters="[{ text: '城市', value: 'city' }, { text: '县', value: 'district' }]" :filter-method="filterTag" filter-placement="bottom-end">
+        <el-table-column prop="level" label="状态" width="100" :filters="[{ text: '城市', value: 'city' }, { text: '县', value: 'district' }]" :filter-method="filterTagFuc" filter-placement="bottom-end">
            <template slot-scope="scope">
             <el-tag v-if="scope.row.level=='city'"
               close-transition>城市</el-tag>
@@ -105,28 +105,28 @@
         <el-table-column prop="" label="备注"> </el-table-column>
         <el-table-column fixed="right" label="操作" width="90">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="dialogFormVisible = true">转移</el-button>
-            <el-button type="text" size="small" @click="discardAll(scope.row.adcode)">弃置</el-button>
+            <el-button type="text" size="small" @click="transferAssetFuc(scope.row.adcode)">转移</el-button>
+            <el-button type="text" size="small" @click="discardAssetFuc(scope.row.adcode)">弃置</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- 底部操作 -->
       <div id="paging">
-        <el-button type="warning" plain id="assTranBtn" size="mini" @click="dialogFormVisible = true">资产转移</el-button>
-         <el-button type="danger" plain id="assTranBtn" size="mini" @click="discardAll(selectAsset)">批量弃置</el-button>
+        <el-button type="warning" plain id="assTranBtn" size="mini" @click="transferAssetFuc(selectAsset)">资产转移</el-button>
+         <el-button type="danger" plain id="assTranBtn" size="mini" @click="discardAssetFuc(selectAsset)">批量弃置</el-button>
         <el-button @click="toggleSelection()" size="mini">取消选择</el-button>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageDat.currentPage" :page-sizes="[50, 100, 150, 200]" :page-size="pageDat.defaultSize" layout="total, sizes, prev, pager, next,  jumper" :total="pageDat.total">
+        <el-pagination @size-change="pageSizeChangeFuc" @current-change="pageCurrentChangeFuc" :current-page="pageDat.currentPage" :page-sizes="[50, 100, 150, 200]" :page-size="pageDat.defaultSize" layout="total, sizes, prev, pager, next,  jumper" :total="pageDat.total">
         </el-pagination>
       </div>
     </div>
     <!-- 转移模态框 -->
     <el-dialog title="选择目的分行" :visible.sync="dialogFormVisible">
       <el-form :model="detailedFormDat">
-        <el-cascader :options="destinationBranch" :props="{value:'adcode',label:'name',children:'districts'}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
+        <el-cascader :options="destinationBranch" :props="{value:'adcode',label:'name',children:'districts'}" v-model="goToBranch" @change="branchChangeFuc"></el-cascader>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="sureTransferFun()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -144,6 +144,8 @@ export default {
       showBranch: [],
       // 转移目的地分行
       destinationBranch: [],
+      // 目的分行（用于发送给后台）
+      goToBranch: [],
       // 查询AssetID
       branchIDDat: {
         id: ''
@@ -237,14 +239,13 @@ export default {
     // ID查询
     SearchIDFuc () {
       let id = this.branchIDDat.id
-      console.log(id)
       let _this = this
       this.ajaxFuc('get', 'http://restapi.amap.com/v3/weather/weatherInfo', { city: id, key: '5fd5e55edd11ba47e3876cb93613db29' }, function (res) {
         _this.assetList = res.data.districts[0].districts
       })
     },
     // 详细搜索ID
-    submitForm (formName) {
+    submitFormFuc (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.detailedFormDat)
@@ -256,38 +257,23 @@ export default {
       })
     },
     // 重置表单
-    resetForm (formName) {
+    resetFormFuc (formName) {
       this.$refs[formName].resetFields()
     },
     // 表格状态筛选
-    filterTag (value, row) {
+    filterTagFuc (value, row) {
       return row.status === value
     },
     // 分页长度改变
-    handleSizeChange (val) {
+    pageSizeChangeFuc (val) {
       console.log(`每页 ${val} 条`)
     },
     // 分页选择页数变化
-    handleCurrentChange (val) {
+    pageCurrentChangeFuc (val) {
       console.log(`当前页: ${val}`)
     },
-    // 修改assetList值
-    getInvList () {
-      // this.$axios.get(' http://restapi.amap.com/v3/weather/weatherInfo?city=110101&key=5fd5e55edd11ba47e3876cb93613db29').then(res => {
-      //   console.log(res.data)
-      // })
-      // this.$axios.get(' http://restapi.amap.com/v3/config/district', {
-      //   params: {
-      //     keywords: '中国',
-      //     subdistrict: 2,
-      //     key: '5fd5e55edd11ba47e3876cb93613db29'
-      //   }
-      // }).then(res => {
-      //   console.log(res)
-      //   this.pageDat.total = res.data.districts[0].districts.length
-      //   this.assetList = res.data.districts[0].districts
-      //   this.destinationBranch = res.data.districts
-      // })
+    // 获取资产列表数据
+    getAssetFuc () {
       let _this = this
       this.ajaxFuc('get', 'http://restapi.amap.com/v3/config/district', { keywords: '中国', subdistrict: 2, key: '5fd5e55edd11ba47e3876cb93613db29' }, function (res) {
         _this.pageDat.total = res.data.districts[0].districts.length
@@ -297,6 +283,11 @@ export default {
       this.ajaxFuc('get', 'http://restapi.amap.com/v3/weather/weatherInfo', { city: 431081, key: '5fd5e55edd11ba47e3876cb93613db29' }, function (res) {
         _this.belongBranchDat = res.data.lives
       })
+    },
+    // 选择资产
+    selectAssetChangeFuc (val) {
+      this.multipleSelection = val
+      this.selectAsset = val
     },
     // 取消选择列表中的资产
     toggleSelection (rows) {
@@ -308,48 +299,21 @@ export default {
         this.$refs.multipleTable.clearSelection()
       }
     },
-    // 选择资产
-    handleSelectionChange (val) {
-      this.multipleSelection = val
-      console.log(this.multipleSelection)
-      this.selectAsset = this.multipleSelection
+    // 资产转移弹出框
+    transferAssetFuc (asset) {
+      this.assetOperationFuc(asset, 'transfer')
     },
-    // 弹出转移模态框
-    transferAsset () {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '选择目的分行', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
+    // 请求转移资产
+    sureTransferFun () {
+      this.dialogFormVisible = false
+      this.$message({
+        type: 'success',
+        message: '转移成功!'
       })
     },
     // 弃置
-    discardAll (id) {
-      console.log(id)
-      this.$confirm('确定弃置？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '弃置成功!'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消弃置'
-        })
-      })
+    discardAssetFuc (asset) {
+      this.assetOperationFuc(asset, 'discard')
     },
     // ajax 请求
     ajaxFuc (method, url, params, callback) {
@@ -363,11 +327,47 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+    // 资产处理
+    assetOperationFuc (asset, type) {
+      console.log(asset)
+      if (asset.length === 0) {
+        alert('请选择资产')
+        return
+      }
+      if (typeof (asset) === 'string') {
+        // 操作一个
+        console.log('操作一个')
+      } else {
+        // 操作一个或者多个
+        console.log('操作一个或者多个')
+      }
+      if (type === 'transfer') {
+        // 转移
+        this.dialogFormVisible = true
+      } else {
+        // 弃置
+        this.$confirm('确定弃置？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '弃置成功!'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消弃置'
+          })
+        })
+      }
     }
   },
   // 钩子函数
   mounted: function () {
-    this.getInvList()
+    this.getAssetFuc()
   }
 }
 </script>
