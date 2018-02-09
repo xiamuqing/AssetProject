@@ -19,7 +19,16 @@
             <el-input placeholder="输入Asset ID查询" v-model.number="branchIDDat.id" clearable autofocus></el-input>
           </el-col>
           <el-col :xs="5" :sm="4" :md="4" :lg="4" >
-            <el-button type="primary" icon="el-icon-search" @click="SearchIDFuc()">搜索</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="SearchIDFuc()">&nbsp;搜&nbsp;&nbsp;索</el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :sm="4" :md="6" :lg="7" class="hidden-xs-only">&nbsp;</el-col>
+          <el-col :xs="17" :sm="12" :md="8" :lg="6" >
+            <el-input placeholder="舊資產編號、供應商、型號等等查询" v-model.number="branchIDDat.id" clearable autofocus></el-input>
+          </el-col>
+          <el-col :xs="5" :sm="4" :md="4" :lg="4" >
+            <el-button type="primary" icon="el-icon-search" @click="SearchIDFuc()">关键字</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -29,6 +38,11 @@
      <h2 @click="detailFlag=!detailFlag">详细搜寻 <i class="el-icon-arrow-down"></i></h2>
       <hr>
       <el-form :model="detailedFormDat" ref="detailedFormDat" label-width="100px" class="demo-ruleForm" v-show="detailFlag==true">
+        <el-form-item label="所属分行">
+          <el-col :xs="24" :sm="16" :md="16" :lg="16" >
+          <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
+        </el-col>
+        </el-form-item>
         <el-form-item label="资产种类">
           <el-col :xs="24" :sm="12" :md="12" :lg="12" >
              <el-cascader :options="belongBranchDat" :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
@@ -39,10 +53,24 @@
             <el-option v-for="item in arr" :key="item.id" :label="item.text" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="颜色" prop="variety">
+          <el-select v-model="detailedFormDat.variety" placeholder="请选择资产类别">
+            <el-option v-for="item in arr" :key="item.id" :label="item.text" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="供应商" prop="provider">
           <el-select v-model="detailedFormDat.provider" placeholder="请选择供应商">
             <el-option v-for="item in arr" :key="item.id" :label="item.text" :value="item.id"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="资产价格">
+          <el-col :span="4">
+            <el-input type="number" v-model.number="detailedFormDat.provider"></el-input>
+          </el-col>
+          <el-col class="line" :span="1"> -</el-col>
+          <el-col :span="4">
+            <el-input type="number" v-model.number="detailedFormDat.provider"></el-input>
+          </el-col>
         </el-form-item>
         <el-form-item label="购置时间">
           <el-col :span="6">
@@ -115,7 +143,7 @@
         <el-button type="warning" plain id="assTranBtn" size="mini" @click="transferAssetFuc(selectAsset)">资产转移</el-button>
          <el-button type="danger" plain id="assTranBtn" size="mini" @click="discardAssetFuc(selectAsset)">批量弃置</el-button>
         <el-button @click="toggleSelection()" size="mini">取消选择</el-button>
-        <el-pagination @size-change="pageSizeChangeFuc" @current-change="pageCurrentChangeFuc" :current-page="pageDat.currentPage" :page-sizes="[50, 100, 150, 200]" :page-size="pageDat.defaultSize" layout="total, sizes, prev, pager, next,  jumper" :total="pageDat.total">
+        <el-pagination @size-change="pageSizeChangeFuc" @current-change="pageCurrentChangeFuc" :current-page="pageDat.currentPage" :page-sizes="[2, 5, 10, 20]" :page-size="pageDat.defaultSize" layout="total, sizes, prev, pager, next,  jumper" :total="pageDat.total">
         </el-pagination>
       </div>
     </div>
@@ -262,7 +290,7 @@ export default {
     },
     // 表格状态筛选
     filterTagFuc (value, row) {
-      return row.status === value
+      return row.level === value
     },
     // 分页长度改变
     pageSizeChangeFuc (val) {
@@ -275,10 +303,11 @@ export default {
     // 获取资产列表数据
     getAssetFuc () {
       let _this = this
-      this.ajaxFuc('get', 'http://restapi.amap.com/v3/config/district', { keywords: '中国', subdistrict: 2, key: '5fd5e55edd11ba47e3876cb93613db29' }, function (res) {
+      this.ajaxFuc('get', 'http://restapi.amap.com/v3/config/district', { keywords: '湖南', subdistrict: 2, key: '5fd5e55edd11ba47e3876cb93613db29' }, function (res) {
         _this.pageDat.total = res.data.districts[0].districts.length
         _this.assetList = res.data.districts[0].districts
         _this.destinationBranch = res.data.districts
+        console.log(res.data.districts[0].districts)
       })
       this.ajaxFuc('get', 'http://restapi.amap.com/v3/weather/weatherInfo', { city: 431081, key: '5fd5e55edd11ba47e3876cb93613db29' }, function (res) {
         _this.belongBranchDat = res.data.lives
@@ -322,7 +351,7 @@ export default {
         url: url,
         params: params
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         callback(res)
       }).catch(err => {
         console.log(err)
@@ -335,11 +364,14 @@ export default {
         alert('请选择资产')
         return
       }
+      // var params = ''
       if (typeof (asset) === 'string') {
         // 操作一个
+        // params = Number(asset)
         console.log('操作一个')
       } else {
         // 操作一个或者多个
+        // params = asset[0].abcode
         console.log('操作一个或者多个')
       }
       if (type === 'transfer') {
@@ -376,7 +408,7 @@ export default {
 #invList{ width: 80%; margin: 0 auto; }
 #invList #searchInput{ height: 110px; }
 #invList h2{ font-size: 2.5vmin; color: #000; height: 20px; line-height: 40px; margin-top: 30px; padding: 0 10px; }
-#fasttips{ height: 100px; }
+#fasttips{ height: 150px; }
 #fasttips h2{ text-align: right; margin-top: 20px; }
 #searchInput .el-col{ margin: 10px 0px; }
 #invList span.el-cascader{ width: 100%; margin: 0 auto; }

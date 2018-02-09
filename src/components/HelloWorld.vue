@@ -1,53 +1,47 @@
 <template>
   <div class="hello">
-    <el-button type="warning" disabled>警告按钮</el-button>
-    <div class="block">
-      <span class="demonstration">默认</span>
-      <el-date-picker
-        v-model="value6"
-        type="daterange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期">
-      </el-date-picker>
-    </div>
+    <el-form label-position="left" ref="form" label-width="72px" class="bd">
+      <el-form-item label="资产种类">
+        <el-cascader
+          :options="options"
+          v-model="selectedOptions3"
+          :props="{value:'id',label:'value',children:'children'}"
+        ></el-cascader>
+      </el-form-item>
+    </el-form>
+    <InvoiceSearch></InvoiceSearch>
   </div>
 </template>
 
 <script>
+import InvoiceSearch from './InvoiceSearch.vue'
 export default {
   data () {
     return {
-      pickerOptions2: {
-        shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
-      value6: '',
-      value7: ''
+      selectedOptions3: [],
+      options: []
     }
+  },
+  components: {
+    InvoiceSearch
+  },
+  methods: {
+    getData: function () { // 当前页面为详情页时，向后台获取数据
+      let _this = this
+      this.$axios.get('http://10.88.22.54/api/Inventory/TeatData', {
+        id: '555554'
+      })
+        .then(function (response) {
+          console.log(response)
+          _this.options = response.data
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    }
+  },
+  mounted () {
+    this.getData()
   }
 }
 </script>
