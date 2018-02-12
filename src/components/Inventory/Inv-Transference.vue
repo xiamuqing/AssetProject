@@ -8,7 +8,7 @@
           <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="selectBranch" @change="branchChangeFuc"></el-cascader>
         </el-col>
         </el-form-item>
-        <el-form-item label="购置时间">
+        <el-form-item label="弃置时间">
           <el-col :span="6">
             <el-date-picker v-model="transferFormDat.transferTime" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期"  end-placeholder="结束日期" :picker-options="pickerOptions"> </el-date-picker>
           </el-col>

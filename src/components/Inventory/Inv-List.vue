@@ -148,13 +148,40 @@
       </div>
     </div>
     <!-- 转移模态框 -->
-    <el-dialog title="选择目的分行" :visible.sync="dialogFormVisible">
-      <el-form :model="detailedFormDat">
-        <el-cascader :options="destinationBranch" :props="{value:'adcode',label:'name',children:'districts'}" v-model="goToBranch" @change="branchChangeFuc"></el-cascader>
+    <el-dialog title="资产转移" :visible.sync="dialogFormVisible">
+      <el-form :model="detailedFormDat" ref="detailedFormDat">
+        <el-form-item label="转移时间">
+          <el-date-picker v-model="detailedFormDat.value1" type="date" placeholder="选择日期"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="目的分行">
+          <el-col :xs="24" :sm="16" :md="16" :lg="16" >
+            <el-cascader :options="destinationBranch" :props="{value:'adcode',label:'name',children:'districts'}" v-model="goToBranch" @change="branchChangeFuc"></el-cascader>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="转移原因">
+          <el-select v-model="detailedFormDat.deliveryTime" placeholder="请选择">
+            <el-option v-for="item in reasons" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="sureTransferFun()">确 定</el-button>
+        <el-button type="primary" @click="transferSubmitFun(detailedFormDat)">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 弃置模态框 -->
+    <el-dialog title="弃置资产" :visible.sync="dialogDiscardVisible">
+      <el-form :model="detailedFormDat" ref="detailedFormDat">
+        <el-form-item label="弃置时间">
+          <el-date-picker v-model="detailedFormDat.deliveryTime" type="date" placeholder="选择日期"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="弃置原因">
+          <el-input type="textarea" v-model="detailedFormDat.deliveryTime"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogDiscardVisible = false">取 消</el-button>
+        <el-button type="primary" @click="discardSubmitFun(detailedFormDat)">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -251,8 +278,27 @@ export default {
       assetList: [],
       // 显示隐藏资产转移
       dialogFormVisible: false,
+      // 显示隐藏资产弃置
+      dialogDiscardVisible: false,
       // 已选择的资产列表信息
-      selectAssetList: []
+      selectAssetList: [],
+      // 迁移原因（后台数据）
+      reasons: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }]
     }
   },
   methods: {
@@ -330,19 +376,47 @@ export default {
     },
     // 资产转移弹出框
     transferAssetFuc (asset) {
-      this.assetOperationFuc(asset, 'transfer')
+      if (asset.length === 0) {
+        alert('请选择资产')
+        return
+      }
+      this.dialogFormVisible = true
     },
-    // 请求转移资产
-    sureTransferFun () {
-      this.dialogFormVisible = false
-      this.$message({
-        type: 'success',
-        message: '转移成功!'
-      })
-    },
-    // 弃置
+    // 弃置弹出框
     discardAssetFuc (asset) {
-      this.assetOperationFuc(asset, 'discard')
+      if (asset.length === 0) {
+        alert('请选择资产')
+        return
+      }
+      this.dialogDiscardVisible = true
+    },
+    // 转移资产提交
+    transferSubmitFun (formName) {
+      // 发送数据给后台
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.detailedFormDat)
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+      this.dialogFormVisible = false
+    },
+    // 弃置资产提交
+    discardSubmitFun (formName) {
+      // 发送数据给后台
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.detailedFormDat)
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+      this.dialogFormVisible = false
     },
     // ajax 请求
     ajaxFuc (method, url, params, callback) {
@@ -356,45 +430,6 @@ export default {
       }).catch(err => {
         console.log(err)
       })
-    },
-    // 资产处理
-    assetOperationFuc (asset, type) {
-      console.log(asset)
-      if (asset.length === 0) {
-        alert('请选择资产')
-        return
-      }
-      // var params = ''
-      if (typeof (asset) === 'string') {
-        // 操作一个
-        // params = Number(asset)
-        console.log('操作一个')
-      } else {
-        // 操作一个或者多个
-        // params = asset[0].abcode
-        console.log('操作一个或者多个')
-      }
-      if (type === 'transfer') {
-        // 转移
-        this.dialogFormVisible = true
-      } else {
-        // 弃置
-        this.$confirm('确定弃置？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '弃置成功!'
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消弃置'
-          })
-        })
-      }
     }
   },
   // 钩子函数
