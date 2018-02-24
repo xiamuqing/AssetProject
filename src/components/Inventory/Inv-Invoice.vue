@@ -1,52 +1,50 @@
 <template>
   <div class="InvInvoice">
-   <el-row  type="flex" justify="center">
-    <el-col :xs="24" :sm="20" :md="16" :lg="12" :xl="10">
-      <el-form ref="form" label-width="70px" label-position="left">
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="12">
-            <el-form-item label="发票代码">
-              <el-input :disabled="notChange" v-model="invoice.code"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12">
-            <el-form-item label="发票号码">
-              <el-input :disabled="notChange" v-model="invoice.number"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="上传PDF">
-        <el-upload
-          :action="uploadUrl"
-          list-type="picture-card"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-          :file-list="invoice.fileList"
-          :on-success="handleAvatarSuccess"
-          :disabled="notChange">
-          <i class="el-icon-plus"></i>
-        </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-          <img width="100%" :src="dialogImageUrl" alt="">
-        </el-dialog>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input type="textarea" :rows="4" :disabled="notChange" v-model="invoice.annotation"></el-input>
-        </el-form-item>
-        <el-form-item v-show="pageSwitch=='Build'">
-          <el-button type="primary" v-on:click="addDate()">上传</el-button>
-          <el-button>取消</el-button>
-        </el-form-item>
-        <el-form-item v-show="pageSwitch=='Details'">
-            <el-button type="primary"  v-show="notChange==false" v-on:click="changeDate()">确认</el-button>
-            <el-button  v-show="notChange==false" v-on:click="notChange=true">取消</el-button>
-            <el-button type="primary" v-show="notChange==true" v-on:click="notChange=false">修改</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </el-row>
-   <router-link :to="'/InvInvoice/Build/'+2544545465">加</router-link>
-   <router-link :to="'/InvInvoice/Details/'+55111">看</router-link>
+    <el-row  type="flex" justify="center">
+      <el-col :xs="24" :sm="22" :md="20" :lg="18" :xl="14">
+        <el-form ref="form" label-width="70px" label-position="left">
+          <el-row :gutter="20">
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="发票代码">
+                <el-input :disabled="notChange" v-model="invoice.code"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12">
+              <el-form-item label="发票号码">
+                <el-input :disabled="notChange" v-model="invoice.number"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item label="上传PDF">
+          <el-upload
+            :action="uploadUrl"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :file-list="invoice.fileList"
+            :on-success="handleAvatarSuccess"
+            :disabled="notChange">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="dialogImageUrl" alt="">
+          </el-dialog>
+          </el-form-item>
+          <el-form-item label="备注">
+            <el-input type="textarea" :rows="4" :disabled="notChange" v-model="invoice.annotation"></el-input>
+          </el-form-item>
+          <el-form-item v-show="pageSwitch=='Build'">
+            <el-button type="primary" v-on:click="addDate()">上传</el-button>
+            <el-button>取消</el-button>
+          </el-form-item>
+          <el-form-item v-show="pageSwitch=='Details'">
+              <el-button type="primary"  v-show="notChange==false" v-on:click="changeDate()">确认</el-button>
+              <el-button  v-show="notChange==false" v-on:click="notChange=true">取消</el-button>
+              <el-button type="primary" v-show="notChange==true" v-on:click="notChange=false">修改</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -54,21 +52,21 @@
 export default {
   data () {
     return {
-      notChange: true,
-      pageSwitch: '',
-      dialogImageUrl: '',
-      dialogVisible: false,
-      uploadUrl: 'http://restapi.amap.com/v3/config/district',
-      invId: '',
-      invoiceId: '',
-      invoice: {
-        code: '2255555',
-        number: '55555555',
+      notChange: true, // 判断当前表单元素是否可用
+      pageSwitch: '', // 当前页面是新增页还是详情页
+      dialogImageUrl: '', // 查看发票图片的图片地址
+      dialogVisible: false, // 查看图片的弹窗是否显示
+      uploadUrl: 'http://restapi.amap.com/v3/config/district', // 图片上传路径
+      invId: '', // 资产ID
+      invoiceId: '', // 发票ID
+      invoice: { // 发票详情
+        code: '2255555', // 发票代码
+        number: '55555555', // 发票号码
         fileList: [
           {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
           {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
         ],
-        annotation: 'sdgfukrfdguirhgui'
+        annotation: 'sdgfukrfdguirhgui' // 发票备注
       }
     }
   },

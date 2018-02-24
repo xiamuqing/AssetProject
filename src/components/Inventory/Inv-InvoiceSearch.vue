@@ -1,7 +1,7 @@
 <template>
   <div class="InvoiceSearch">
     <el-row  type="flex" justify="center">
-      <el-col :xs="24" :sm="20" :md="16" :lg="12" :xl="10">
+      <el-col :xs="24" :sm="22" :md="20" :lg="18" :xl="14">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="发票代码">
             <el-input v-model="code" placeholder="请输入发票代码"></el-input>
@@ -17,13 +17,23 @@
           style="width: 100%">
           <el-table-column
             prop="adcode"
-            fixed
+            fixed="left"
             label="发票代码"
             width="180">
           </el-table-column>
           <el-table-column
             prop="name"
             label="图片">
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="100">
+            <template slot-scope="scope">
+              <router-link :to="'/InvInvoice/Build/'+scope.row.adcode">
+                <el-button type="text">查看</el-button>
+              </router-link>
+            </template>
           </el-table-column>
         </el-table>
       </el-col>
@@ -57,6 +67,9 @@ export default {
           console.log(error)
         })
     }
+  },
+  mounted () {
+    this.getData()
   }
 }
 </script>

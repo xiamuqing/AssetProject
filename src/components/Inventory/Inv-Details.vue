@@ -1,7 +1,7 @@
 <template>
   <div class="InvDetails">
    <el-row  type="flex" justify="center">
-    <el-col :xs="24" :sm="20" :md="16" :lg="12" :xl="10">
+    <el-col :xs="24" :sm="22" :md="20" :lg="18" :xl="14">
       <!-- 更多操作 只在详情页或修改页显示 -->
       <el-dropdown trigger="click" class="hd-manipulate details-nav" v-if="pageSwitch==='details'">
         <el-button size="small" type="primary" plain class="details-nav-button">
@@ -260,11 +260,7 @@
           <h4 class="bd-title">迁移记录：</h4>
 
           <!-- 迁移记录 -->
-          <ul class="record-list">
-            <li v-for="(data,index) in tableData3" :key="index">
-              {{data.date}} ， 从 {{data.name}} 迁移到 {{data.name}} 。迁移原因 ： {{data.address}}
-            </li>
-          </ul>
+          <transferList :recordList="recordList" :height="500"></transferList>
           <!-- 迁移记录 -->
           <!-- 只在修改页显示 -->
           <el-form-item v-if="notChange==false">
@@ -290,6 +286,7 @@
 </template>
 
 <script>
+import transferList from './Inv-TransferList.vue'
 export default {
   data () {
     return {
@@ -306,23 +303,6 @@ export default {
       },
       options: [],
       options2: [],
-      tableData3: [
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '来电反馈结股份回购果恢复骨结核开国皇帝库房隔开i未婚夫ui领导风格iu回复流进大海v不'
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普结股份回购果恢复骨结核开国皇帝库房隔开i未婚夫ui领导风格iu回复流进大1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }
-      ],
       selectedOptions3: ['360000', '360700', '360704'],
       value: '',
       value3: true,
@@ -334,12 +314,14 @@ export default {
       fileList: [
         {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
         {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
-      ]
+      ],
+      // 查询到的转移记录列表
+      recordList: []
     }
   },
   // 在 `methods` 对象中定义方法
   methods: {
-    getData: function () { // 当前页面为详情页时，向后台获取数据
+    getData: function () { // 当前页面为详情页时，向后台获取资产详情数据
       let _this = this
       this.$axios.get(' http://restapi.amap.com/v3/weather/weatherInfo', {
         params: {
@@ -355,7 +337,7 @@ export default {
           console.log(error)
         })
     },
-    addDate: function () { // 向后台添加数据
+    addDate: function () { // 向后台添加资产数据
       let _this = this
       this.$axios.get(' http://restapi.amap.com/v3/config/district', {
         params: {
@@ -372,7 +354,7 @@ export default {
           console.log(error)
         })
     },
-    changeData: function () { // 向后台传输修改后的数据
+    changeData: function () { // 向后台传输修改后的资产数据
       this.$axios.post('http://restapi.amap.com/v3/weather/weatherInfo?parameters',
         {
           firstName: 'Fred',
@@ -385,11 +367,8 @@ export default {
           console.log(error)
         })
     },
-    changeDetails: function (temp) { // 页面输入框状态改变
+    changeDetails: function (temp) { // 页面输入框状态是否可用改变
       this.notChange = temp
-    },
-    deleteImg: function (num) { // 详情页删除图片
-      alert('确认删除 ' + num)
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
@@ -397,6 +376,20 @@ export default {
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
+    },
+    branchChangeFuc (value) { // 临时的获取资产迁移记录的函数，正式时删除
+      console.log(value)
+      let _this = this
+      this.$axios.get(' http://restapi.amap.com/v3/config/district', {
+        params: {
+          keywords: '江西',
+          subdistrict: 2,
+          key: '5fd5e55edd11ba47e3876cb93613db29'
+        }
+      })
+        .then(function (res) {
+          _this.recordList = res.data.districts[0].districts
+        })
     }
   },
   computed: {
@@ -413,6 +406,7 @@ export default {
   mounted () {
     this.addDate()
     this.getData()
+    this.branchChangeFuc()
     if (this.$route.path === '/InvBuild') { // 当前为新增页面
       // this.form = {}
       this.pageSwitch = 'build'
@@ -422,7 +416,8 @@ export default {
       this.pageSwitch = 'details'
       document.getElementsByClassName('el-upload--picture-card')[0].style.display = 'none'
     }
-  }
+  },
+  components: {transferList}
 }
 </script>
 

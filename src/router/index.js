@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import InvList from '@/components/Inventory/Inv-List'
 import InvDetails from '@/components/Inventory/Inv-Details'
 import InvInvoice from '@/components/Inventory/Inv-Invoice'
+import InvInvoiceSearch from '@/components/Inventory/Inv-InvoiceSearch'
 import InvTransfer from '@/components/Inventory/Inv-Transference'
 
 Vue.use(Router)
@@ -36,6 +37,10 @@ export default new Router({
         {path: 'Details/:id', component: InvInvoice},
         {path: 'Build/:id', component: InvInvoice}
       ]
+    },
+    { // 资产-发票搜索
+      path: '/InvInvoiceSearch',
+      component: InvInvoiceSearch
     },
     { // 资产迁移查询列表页面
       path: '/InvTransfer',
