@@ -2,17 +2,6 @@
   <div class="InvDetails">
    <el-row  type="flex" justify="center">
     <el-col :xs="24" :sm="22" :md="20" :lg="18" :xl="14">
-      <!-- 更多操作 只在详情页或修改页显示 -->
-      <el-dropdown trigger="click" class="hd-manipulate details-nav" v-if="pageSwitch==='details'">
-        <el-button size="small" type="primary" plain class="details-nav-button">
-          更多操作
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-on:click.native="changeDetails(false)">修改</el-dropdown-item>
-          <el-dropdown-item>转移</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <!-- 更多操作 只在详情页或修改页显示 -->
       <!-- 头部 -->
       <div class="hd">
         <span class="hd-title">
@@ -51,13 +40,13 @@
           <el-col :xs="24" :sm="12">
             <el-form-item label="颜色">
               <el-select v-model="value" placeholder="颜色" :disabled="notChange">
-              <el-option
-                v-for="item in options"
-                :key="item.adcode"
-                :label="item.name"
-                :value="item.adcode">
-              </el-option>
-            </el-select>
+                <el-option
+                  v-for="item in options"
+                  :key="item.adcode"
+                  :label="item.name"
+                  :value="item.adcode">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <!-- 颜色 -->
@@ -90,8 +79,7 @@
         </el-row>
         <el-row  :gutter="20">
 
-          <!-- 只在新增页显示 -->
-          <!-- 新增件数 -->
+          <!-- 新增件数 只在新增页显示 -->
           <template v-if="pageSwitch==='build'">
             <el-col :xs="24" :sm="12">
               <el-form-item label="新增件数">
@@ -99,12 +87,12 @@
               </el-form-item>
             </el-col>
           </template>
-          <!-- 新增件数 -->
-          <!-- 只在新增页显示 -->
+          <!-- 新增件数 只在新增页显示 -->
           <!-- 机身编号 -->
           <el-col :xs="24" :sm="12">
             <el-form-item label="机身编号">
-              <el-input v-model="form.name" :disabled="notChange"></el-input>
+              <el-input v-if="pageSwitch==='build'" type="textarea" v-model="form.desc" :disabled="notChange" :rows="5"></el-input>
+              <el-input v-if="pageSwitch==='details'" v-model="form.name" :disabled="notChange"></el-input>
             </el-form-item>
           </el-col>
           <!-- 机身编号 -->
@@ -262,24 +250,74 @@
           <!-- 迁移记录 -->
           <transferList :recordList="recordList" :height="500"></transferList>
           <!-- 迁移记录 -->
-          <!-- 只在修改页显示 -->
-          <el-form-item v-if="notChange==false">
-            <el-button type="primary">确认</el-button>
-            <el-button v-on:click="changeDetails(true)">取消</el-button>
-          </el-form-item>
-          <!-- 只在修改页显示 -->
+
+          <!-- 转移模态框 -->
+          <el-dialog
+            title="资产转移"
+            width="90%"
+            :visible.sync="dialogFormVisible">
+            <el-form :model="form" label-width="70px">
+              <el-form-item label="转移时间">
+                <el-date-picker type="date" placeholder="选择日期" v-model="form.date1"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="目的分行">
+                <el-cascader
+                  :options="options"
+                  v-model="selectedOptions3"
+                  placeholder="请选择当前资产将转移到的分行"
+                  :props="{value:'citycode',label:'name',children:'districts'}"
+                ></el-cascader>
+              </el-form-item>
+              <el-form-item label="转移原因">
+                <el-select v-model="form.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="1"></el-option>
+                  <el-option label="区域二" value="2"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="原因描述">
+                <el-input type="textarea" v-model="form.desc" :rows="4"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+            </div>
+          </el-dialog>
+          <!-- 转移模态框 -->
         </template>
         <!-- 只在详情页或修改页显示 -->
 
+        <el-col :span="24" class="btn-box">
+          <!-- 只在详情页或修改页显示 -->
+          <template v-if="pageSwitch==='details'">
+            <!-- 只在详情页显示 -->
+            <template v-if="notChange==true">
+              <el-button type="primary" v-on:click="changeDetails(false)">修改</el-button>
+              <el-button @click="dialogFormVisible = true">转移</el-button>
+            </template>
+            <!-- 只在详情页显示 -->
+
+            <!-- 只在修改页显示 -->
+            <template v-if="notChange==false">
+              <el-button type="primary" v-on:click="changeData()">确认</el-button>
+              <el-button v-on:click="changeDetails(true)">取消</el-button>
+            </template>
+            <!-- 只在修改页显示 -->
+          </template>
+          <!-- 只在详情页或修改页显示 -->
+
           <!-- 只在新增显示 -->
-          <el-form-item v-if="pageSwitch==='build'">
+          <template v-if="pageSwitch==='build'">
             <el-button type="primary">确认</el-button>
             <el-button>取消</el-button>
-          </el-form-item>
+          </template>
           <!-- 只在新增显示 -->
 
+        </el-col>
       </el-form>
       <!-- 主体 -->
+      <!-- 页面弹框 -->
+      <!-- 页面弹框 -->
     </el-col>
   </el-row>
   </div>
@@ -310,6 +348,7 @@ export default {
       pageSwitch: '',
       dialogImageUrl: '',
       dialogVisible: false,
+      dialogFormVisible: false,
       uploadUrl: 'http://restapi.amap.com/v3/config/district',
       fileList: [
         {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
@@ -397,9 +436,9 @@ export default {
   watch: {
     notChange: function (newQuestion, oldQuestion) {
       if (this.notChange === true) {
-        document.getElementsByClassName('el-upload--picture-card')[0].style.display = 'none'
+        document.querySelector('.el-upload--picture-card').style.display = 'none'
       } else {
-        document.getElementsByClassName('el-upload--picture-card')[0].style.display = 'inline-block'
+        document.querySelector('.el-upload--picture-card').style.display = 'inline-block'
       }
     }
   },
@@ -414,7 +453,7 @@ export default {
     } else { // 当前为详情页面
       this.form.id = this.$route.params.id
       this.pageSwitch = 'details'
-      document.getElementsByClassName('el-upload--picture-card')[0].style.display = 'none'
+      document.querySelector('.el-upload--picture-card').style.display = 'none'
     }
   },
   components: {transferList}
@@ -425,45 +464,6 @@ export default {
 <style scoped>
   .InvDetails a{
     text-decoration:none;
-  }
-  /*右下角更多操作导航*/
-  .InvDetails .details-nav{
-    position: fixed;
-    z-index: 3;
-    bottom:20px;
-    right: 4%;
-  }
-  .InvDetails .details-nav .details-nav-button{
-    font-weight: bold;
-    border-radius: 50%;
-    height: 4em;
-    width: 4em;
-    white-space:normal;
-    padding:10px;
-    animation:water 2s infinite;
-    -o-animation:water 2s infinite;
-    -moz-animation:water 2s infinite;
-    -webkit-animation:water 2s infinite; /* Safari 和 Chrome */
-  }
-  @keyframes water{
-    0% {box-shadow: 0 0 5px #409EFF;}
-    50% {box-shadow: 0 0 50px #409EFF;}
-    100% {box-shadow: 0 0 5px #409EFF;}
-  }
-  @-o-keyframes water{
-    0% {box-shadow: 0 0 5px #409EFF;}
-    50% {box-shadow: 0 0 50px #409EFF;}
-    100% {box-shadow: 0 0 5px #409EFF;}
-  }
-  @-moz-keyframes water{
-    0% {box-shadow: 0 0 5px #409EFF;}
-    50% {box-shadow: 0 050px #409EFF;}
-    100% {box-shadow: 0 0 5px #409EFF;}
-  }
-  @-webkit-keyframes water{
-    0% {box-shadow: 0 0 5px #409EFF;}
-    50% {box-shadow: 0 0 50px #409EFF;}
-    100% {box-shadow: 0 0 5px #409EFF;}
   }
   /*头部*/
   .InvDetails .hd{
@@ -489,7 +489,7 @@ export default {
   }
   /*主体部分*/
   .InvDetails .bd{
-    padding:10px;
+    padding:10px 10px 60px;
   }
   .InvDetails .bd .bd-title{
     border-bottom: 1px solid #ccc;
@@ -513,5 +513,15 @@ export default {
     padding:12px 0;
     display:block;
     width: 100%;
+  }
+  .InvDetails .bd .btn-box{
+    border-top: 1px solid #ccc;
+    text-align: center;
+    background: #fff;
+    position: fixed;
+    padding:10px;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
   }
 </style>

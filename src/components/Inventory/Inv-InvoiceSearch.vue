@@ -4,7 +4,7 @@
       <el-col :xs="24" :sm="22" :md="20" :lg="18" :xl="14">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="发票代码">
-            <el-input v-model="code" placeholder="请输入发票代码"></el-input>
+            <el-input-number v-model="code" :controls="false" placeholder="请输入发票代码或发票号码"></el-input-number>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="getData">查询</el-button>
@@ -19,7 +19,7 @@
             prop="adcode"
             fixed="left"
             label="发票代码"
-            width="180">
+            width="100">
           </el-table-column>
           <el-table-column
             prop="name"
@@ -28,7 +28,7 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="100">
+            width="60">
             <template slot-scope="scope">
               <router-link :to="'/InvInvoice/Build/'+scope.row.adcode">
                 <el-button type="text">查看</el-button>

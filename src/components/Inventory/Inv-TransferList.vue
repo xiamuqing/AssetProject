@@ -1,10 +1,10 @@
 <template>
   <div id="transferList">
     <el-table :data="recordList" style="width: 100%" :max-height="height">
-      <el-table-column prop="date" label="迁移日期" width="130" sortable
+      <el-table-column prop="date" label="转移日期" width="130" sortable
       :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
       :filter-method="filterHandler" ></el-table-column>
-      <el-table-column prop="name" label="迁移起点">
+      <el-table-column prop="name" label="转移起点">
       </el-table-column>
       <el-table-column prop="name" label="目的地">
       </el-table-column>
@@ -17,7 +17,7 @@
             close-transition>县</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="迁移原因">
+      <el-table-column prop="name" label="转移原因">
         <el-table-column prop="city" label="搬迁" width="100"></el-table-column>
         <el-table-column prop="address" label="入仓" width="100"></el-table-column>
         <el-table-column prop="zip" label="调遣" width="100"></el-table-column>

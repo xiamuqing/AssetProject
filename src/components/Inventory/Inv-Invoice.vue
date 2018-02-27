@@ -37,7 +37,7 @@
             <el-button type="primary" v-on:click="addDate()">上传</el-button>
             <el-button>取消</el-button>
           </el-form-item>
-          <el-form-item v-show="pageSwitch=='Details'">
+          <el-form-item v-show="pageSwitch=='Details'" style="text-align:center;">
               <el-button type="primary"  v-show="notChange==false" v-on:click="changeDate()">确认</el-button>
               <el-button  v-show="notChange==false" v-on:click="notChange=true">取消</el-button>
               <el-button type="primary" v-show="notChange==true" v-on:click="notChange=false">修改</el-button>
@@ -134,9 +134,9 @@ export default {
   watch: {
     notChange: function (newQuestion, oldQuestion) {
       if (this.notChange === true) {
-        document.getElementsByClassName('el-upload--picture-card')[0].style.display = 'none'
+        document.querySelector('.el-upload--picture-card').style.display = 'none'
       } else {
-        document.getElementsByClassName('el-upload--picture-card')[0].style.display = 'inline-block'
+        document.querySelector('.el-upload--picture-card').style.display = 'inline-block'
       }
     }
   },
@@ -149,7 +149,7 @@ export default {
     } else { // 当前为详情页面
       this.pageSwitch = 'Details'
       this.invoiceId = this.$route.params[0].split('/')[1]
-      document.getElementsByClassName('el-upload--picture-card')[0].style.display = 'none'
+      document.querySelector('.el-upload--picture-card').style.display = 'none'
       this.getDate()
     }
   }

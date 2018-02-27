@@ -35,9 +35,9 @@
     </div>
     <!--  复杂查询表单 -->
     <div id="searchForm">
-     <h2 @click="detailFlag=!detailFlag">详细搜寻 <i class="el-icon-arrow-down"></i></h2>
+     <h2 @click="detailFlag = !detailFlag" style="cursor:pointer;">详细搜寻 <i class="el-icon-arrow-down"></i></h2>
       <hr>
-      <el-form :model="detailedFormDat" ref="detailedFormDat" label-width="100px" class="demo-ruleForm" v-show="detailFlag==true">
+      <el-form :model="detailedFormDat" ref="detailedFormDat" label-width="100px" class="demo-ruleForm" v-show="detailFlag==true" id="complexForm">
         <el-form-item label="所属分行">
           <el-col :xs="24" :sm="16" :md="16" :lg="16" >
           <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
@@ -100,27 +100,32 @@
     <div id="assetList">
       <h2>资产列表 <i class="el-icon-caret-bottom"></i></h2>
       <hr>
+      <div id="seat"></div>
+      <div id="tableOpts">
+        <el-button type="warning" plain size="mini" @click="transferAssetFuc(selectAsset)">资产转移</el-button>
+        <el-button type="danger" plain size="mini" @click="discardAssetFuc(selectAsset)">资产弃置</el-button>
+        <el-button type="info" plain size="mini" @click="copyAssetFuc(selectAsset)">资产复制</el-button>
+      </div>
       <router-link to="Inv-Details">
         <router-link to="/InvBuild"><el-button type="primary" plain id="addAssBtn" size="mini">新增资产</el-button></router-link>
       </router-link>
-      <el-table  ref="multipleTable" :data="assetList" max-height="500" border style="width: 100%" tooltip-effect="dark" @selection-change="selectAssetChangeFuc">
-        <el-table-column type="selection" width="55" > </el-table-column>
-        <el-table-column prop="adcode" label="编号" fixed>
+      <el-table  ref="multipleTable" :data="assetList" max-height="1000" border style="width: 100%; margin-top:5px;" tooltip-effect="dark" @selection-change="selectAssetChangeFuc">
+        <el-table-column type="selection" width="30" > </el-table-column>
+        <el-table-column prop="adcode" label="编号" width="70" fixed>
           <template slot-scope="scope">
             <router-link :to="{ name: 'InvDetails', params: { id: scope.row.adcode }}">{{scope.row.adcode}}</router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="资产种类" width="100"> </el-table-column>
-        <el-table-column prop="name" label="名称"> </el-table-column>
-        <el-table-column prop="level" label="级别">
-         <template slot-scope="scope">
-           <span v-if="scope.row.level=='city'">城市</span>
-           <span v-if="scope.row.level=='district'">县</span>
-         </template>
-        </el-table-column>
-        <el-table-column prop="" label="省份"> </el-table-column>
+        <el-table-column prop="" label="旧编号"> </el-table-column>
+        <el-table-column prop="" label="资产种类"> </el-table-column>
+        <el-table-column prop="name" label="资产名称"> </el-table-column>
+        <el-table-column prop="" label="种类"> </el-table-column>
+        <el-table-column prop="" label="颜色"> </el-table-column>
+        <el-table-column prop="" label="Area"> </el-table-column>
+        <el-table-column prop="" label="Branch"> </el-table-column>
+        <el-table-column prop="" label="CostCtr"> </el-table-column>
         <el-table-column prop="" label="供应商"> </el-table-column>
-        <el-table-column prop="" label="型号"> </el-table-column>
+        <el-table-column prop="level" label="机身编号"></el-table-column>
         <el-table-column prop="level" label="状态" width="100" :filters="[{ text: '城市', value: 'city' }, { text: '县', value: 'district' }]" :filter-method="filterTagFuc" filter-placement="bottom-end">
            <template slot-scope="scope">
             <el-tag v-if="scope.row.level=='city'"
@@ -131,18 +136,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="" label="备注"> </el-table-column>
-        <el-table-column fixed="right" label="操作" width="90">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" @click="transferAssetFuc(scope.row.adcode)">转移</el-button>
-            <el-button type="text" size="small" @click="discardAssetFuc(scope.row.adcode)">弃置</el-button>
-          </template>
-        </el-table-column>
       </el-table>
       <!-- 底部操作 -->
       <div id="paging">
-        <el-button type="warning" plain id="assTranBtn" size="mini" @click="transferAssetFuc(selectAsset)">资产转移</el-button>
-         <el-button type="danger" plain id="assTranBtn" size="mini" @click="discardAssetFuc(selectAsset)">批量弃置</el-button>
-        <el-button @click="toggleSelection()" size="mini">取消选择</el-button>
         <el-pagination @size-change="pageSizeChangeFuc" @current-change="pageCurrentChangeFuc" :current-page="pageDat.currentPage" :page-sizes="[2, 5, 10, 20]" :page-size="pageDat.defaultSize" layout="total, sizes, prev, pager, next,  jumper" :total="pageDat.total">
         </el-pagination>
       </div>
@@ -166,7 +162,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="transferSubmitFun(detailedFormDat)">确 定</el-button>
+        <el-button type="primary" @click="transferSubmitFuc(detailedFormDat)">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 弃置模态框 -->
@@ -181,7 +177,27 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogDiscardVisible = false">取 消</el-button>
-        <el-button type="primary" @click="discardSubmitFun(detailedFormDat)">确 定</el-button>
+        <el-button type="primary" @click="discardSubmitFuc(detailedFormDat)">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 复制模态框 -->
+    <el-dialog title="弃置资产" :visible.sync="dialogCopyVisible">
+      <el-form :model="detailedFormDat" ref="detailedFormDat">
+        <p>选择的资产：</p>
+        <el-col :xs="8" :sm="6" :md="4" :lg="3" v-for="item in selectAsset" :key="item.citycode">
+          <span style="color:red;" >{{item.citycode}}&nbsp;</span>
+        </el-col>
+        <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
+        <el-form-item label="复制次数">
+          <el-input type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="机身编号">
+          <el-input type="textarea"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogCopyVisible = false">取 消</el-button>
+        <el-button type="primary" @click="copySubmitFuc(detailedFormDat)">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -193,6 +209,7 @@ export default {
     return {
       // 收放详细搜寻
       detailFlag: false,
+      tableOptsOffsetTop: 0,
       // 所属分行，资产种类三级联动数据
       belongBranchDat: [],
       // 选中分行层级（用于发送给后台）
@@ -280,6 +297,8 @@ export default {
       dialogFormVisible: false,
       // 显示隐藏资产弃置
       dialogDiscardVisible: false,
+      // 显示资产复制弹
+      dialogCopyVisible: false,
       // 已选择的资产列表信息
       selectAssetList: [],
       // 迁移原因（后台数据）
@@ -364,16 +383,6 @@ export default {
       this.multipleSelection = val
       this.selectAsset = val
     },
-    // 取消选择列表中的资产
-    toggleSelection (rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row)
-        })
-      } else {
-        this.$refs.multipleTable.clearSelection()
-      }
-    },
     // 资产转移弹出框
     transferAssetFuc (asset) {
       if (asset.length === 0) {
@@ -390,8 +399,16 @@ export default {
       }
       this.dialogDiscardVisible = true
     },
+    // 资产复制
+    copyAssetFuc (asset) {
+      if (asset.length === 0) {
+        alert('请选择资产')
+        return
+      }
+      this.dialogCopyVisible = true
+    },
     // 转移资产提交
-    transferSubmitFun (formName) {
+    transferSubmitFuc (formName) {
       // 发送数据给后台
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -405,7 +422,21 @@ export default {
       this.dialogFormVisible = false
     },
     // 弃置资产提交
-    discardSubmitFun (formName) {
+    discardSubmitFuc (formName) {
+      // 发送数据给后台
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.detailedFormDat)
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+      this.dialogFormVisible = false
+    },
+    // 资产复制提交
+    copySubmitFuc (formName) {
       // 发送数据给后台
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -434,12 +465,40 @@ export default {
   },
   // 钩子函数
   mounted: function () {
+    console.log(1)
     this.getAssetFuc()
+  },
+  updated: function () {
+    console.log(2)
+    if (!this.detailFlag) {
+      this.tableOptsOffsetTop = document.getElementById('tableOpts').offsetTop + document.getElementById('complexForm').offsetHeight
+    } else {
+      this.tableOptsOffsetTop = document.getElementById('tableOpts').offsetTop
+    }
+    var tableOpts = document.getElementById('tableOpts')
+    var scrollTop = 0
+    var tableOptsHeight = document.getElementById('tableOpts').offsetHeight
+    var tableOptsOffsetTop = this.tableOptsOffsetTop
+    window.onscroll = function () {
+      console.log(tableOptsOffsetTop)
+      // tableOpts 距离顶部的距离
+      scrollTop = document.getElementsByTagName('body')[0].scrollTop || window.pageYOffset || document.body.scrollTop
+      if (tableOptsOffsetTop - 7 <= scrollTop) {
+        // fixed
+        tableOpts.style.cssText = 'position:fixed; top:0px;z-index:100;background:#fff;width:100%;padding:10px 0;margin-bottom:5px;'
+        document.getElementById('seat').style.height = tableOptsHeight + 'px'
+      } else {
+        tableOpts.style.cssText = ''
+        document.getElementById('seat').style.height = 0 + 'px'
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
+p{ margin: 0; padding: 0;}
+#invList .el-dialog__body{ padding-top: 10px; }
 #invList{ width: 80%; margin: 0 auto; }
 #invList #searchInput{ height: 110px; }
 #invList h2{ font-size: 2.5vmin; color: #000; height: 20px; line-height: 40px; margin-top: 30px; padding: 0 10px; }
@@ -449,7 +508,8 @@ export default {
 #invList span.el-cascader{ width: 100%; margin: 0 auto; }
 #invList .el-row{ margin-top: 20px; }
 #assetList .el-table{ text-align: center; }
-#addAssBtn{ float: right; margin-top: -42px; margin-right: 10px; padding: 7px; }
+#assetList #tableOpts button{padding:7px; margin-left: 2px;}
+#addAssBtn{ float: right; margin-top: -28px; padding: 7px; }
 /*取消选择和分页*/
 #paging { margin-top: 10px; }
 #paging .el-pagination{ float: right; }
