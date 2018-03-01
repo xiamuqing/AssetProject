@@ -7,8 +7,10 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'element-ui/lib/theme-chalk/display.css'
+import ECharts from 'vue-echarts'
 
 Vue.use(ElementUI)
+Vue.component('chart', ECharts)
 Vue.prototype.$axios = axios
 /* eslint-disable no-new */
 new Vue({

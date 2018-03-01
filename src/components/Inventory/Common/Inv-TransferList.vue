@@ -1,12 +1,17 @@
 <template>
   <div id="transferList">
     <el-table :data="recordList" style="width: 100%" :max-height="height">
+      <el-table-column prop="id" label="资产编号">
+        <template slot-scope="scope">
+          <router-link :to="{ name: 'InvDetails', params: { id: scope.row.adcode }}">{{scope.row.adcode}}</router-link>
+        </template>
+      </el-table-column>
       <el-table-column prop="date" label="转移日期" width="130" sortable
       :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
       :filter-method="filterHandler" ></el-table-column>
       <el-table-column prop="name" label="转移起点">
       </el-table-column>
-      <el-table-column prop="name" label="目的地">
+      <el-table-column prop="name" label="转移终点">
       </el-table-column>
       <el-table-column prop="level" label="状态" width="80" :filters="[{ text: '城市', value: 'city' }, { text: '县', value: 'district' }]" :filter-method="filterTagFuc" filter-placement="bottom-end">
         <template slot-scope="scope">

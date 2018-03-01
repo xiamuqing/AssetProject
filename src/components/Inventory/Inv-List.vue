@@ -2,10 +2,10 @@
   <div id="invList">
     <!-- 顶部选择分行-->
     <div id="searchInput">
-      <h2>所属分行&gt;&gt;&gt;</h2>
+      <h2>所属区域&gt;&gt;&gt;</h2>
       <hr>
       <el-col :xs="24" :sm="16" :md="16" :lg="16" >
-        <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
+        <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc" placeholder="Area/Branch/Cost Centre"></el-cascader>
       </el-col>
     </div>
     <!-- 快速查询 -->
@@ -38,14 +38,14 @@
      <h2 @click="detailFlag = !detailFlag" style="cursor:pointer;">详细搜寻 <i class="el-icon-arrow-down"></i></h2>
       <hr>
       <el-form :model="detailedFormDat" ref="detailedFormDat" label-width="100px" class="demo-ruleForm" v-show="detailFlag==true" id="complexForm">
-        <el-form-item label="所属分行">
+        <el-form-item label="所属区域" >
           <el-col :xs="24" :sm="16" :md="16" :lg="16" >
-          <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
+          <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="detailedFormDat.showBranch" @change="branchChangeFuc" placeholder="Area/Branch/Cost Centre"></el-cascader>
         </el-col>
         </el-form-item>
         <el-form-item label="资产种类">
           <el-col :xs="24" :sm="12" :md="12" :lg="12" >
-             <el-cascader :options="belongBranchDat" :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
+             <el-cascader :options="belongBranchDat" :props="{value:'adcode',label:'city',children:''}" v-model="detailedFormDat.showBranch" @change="branchChangeFuc"></el-cascader>
           </el-col>
         </el-form-item>
         <el-form-item label="资产类别" prop="variety">
@@ -87,8 +87,12 @@
             <el-checkbox  v-for="type in types" :key="type.id" :label="type.id" :xs="12" :sm="12" :md="4" :lg="4">{{type.text}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="已上传图片" prop="img">
-          <el-switch v-model="detailedFormDat.img"> </el-switch>
+        <el-form-item label="是否有图片" prop="img">
+          <el-radio-group v-model="detailedFormDat.img" size="small">
+            <el-radio-button label="0">无</el-radio-button>
+            <el-radio-button label="1">有</el-radio-button>
+            <el-radio-button label="2">全部</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitFormFuc('detailedFormDat')">搜索</el-button>
@@ -100,6 +104,7 @@
     <div id="assetList">
       <h2>资产列表 <i class="el-icon-caret-bottom"></i></h2>
       <hr>
+      <router-link to="/BranchChart"><el-button type="primary" plain  size="mini" id="BranchChart">查看最新分行更新</el-button></router-link>
       <div id="seat"></div>
       <div id="tableOpts">
         <el-button type="warning" plain size="mini" @click="transferAssetFuc(selectAsset)">资产转移</el-button>
@@ -287,9 +292,10 @@ export default {
         variety: '',
         provider: '',
         type: [],
-        img: false,
+        img: 2,
         deliveryTime: '',
-        discardTime: ''
+        discardTime: '',
+        showBranch: ''
       },
       // 查询到的资产列表
       assetList: [],
@@ -508,10 +514,11 @@ p{ margin: 0; padding: 0;}
 #invList span.el-cascader{ width: 100%; margin: 0 auto; }
 #invList .el-row{ margin-top: 20px; }
 #assetList .el-table{ text-align: center; }
-#assetList #tableOpts button{padding:7px; margin-left: 2px;}
+#assetList #tableOpts button{padding:7px; margin-left: 2px; }
+#BranchChart{float: right; margin-top: -42px; padding: 7px;}
 #addAssBtn{ float: right; margin-top: -28px; padding: 7px; }
 /*取消选择和分页*/
 #paging { margin-top: 10px; }
 #paging .el-pagination{ float: right; }
-#paging:after,#addAssBtn:after{ content:""; height:0; line-height:0; display:block; visibility:hidden; clear:both; }
+#paging:after,#addAssBtn:after,#BranchChart:after{ content:""; height:0; line-height:0; display:block; visibility:hidden; clear:both; }
 </style>

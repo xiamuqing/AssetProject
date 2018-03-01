@@ -5,6 +5,7 @@ import InvDetails from '@/components/Inventory/Inv-Details'
 import InvInvoice from '@/components/Inventory/Inv-Invoice'
 import InvInvoiceSearch from '@/components/Inventory/Inv-InvoiceSearch'
 import InvTransfer from '@/components/Inventory/Inv-Transference'
+import BranchChart from '@/components/Inventory/Inv-BranchChart'
 
 Vue.use(Router)
 
@@ -16,12 +17,12 @@ export default new Router({
     },
     {
       path: '/InvList',
-      name: 'InvList',
-      component: InvList
+      component: InvList,
+      name: InvList
     },
     { // 资产详情页面
       path: '/InvDetails/:id',
-      name: 'InvDetails', // 有传参时，name不可缺少
+      name: 'InvDetails',
       component: InvDetails
     },
     { // 资产新增页面
@@ -45,6 +46,12 @@ export default new Router({
     { // 资产迁移查询列表页面
       path: '/InvTransfer',
       component: InvTransfer
+    },
+    {
+      // 最新分行更新图表
+      path: '/BranchChart',
+      name: 'BranchChart',
+      component: BranchChart
     }
   ]
 })

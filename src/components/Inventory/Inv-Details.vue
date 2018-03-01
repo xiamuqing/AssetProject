@@ -324,7 +324,7 @@
 </template>
 
 <script>
-import transferList from './Inv-TransferList.vue'
+import transferList from './Common/Inv-TransferList.vue'
 export default {
   data () {
     return {
