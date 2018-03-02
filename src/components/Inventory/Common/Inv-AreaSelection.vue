@@ -1,23 +1,32 @@
 <template>
   <el-row :gutter="20" id="AreaSelection">
-    <span>Area：{{area}}/{{branch}}/{{costCtr}}</span>
-    <el-select v-model="areaIndex" placeholder="请选择Area" @change="selectArea">
-      <el-option
-        v-for="(item,index) in allArea" :key="index" :label="item.AreaCode" :value="index">
-      </el-option>
-    </el-select>
-    <span>branch：</span>
-    <el-select v-model="branchIndex" placeholder="请选择branch" @change="selectBranch">
-      <el-option
-        v-for="(item,index) in allBranch" :key="index" :label="item.BranchCode" :value="index">
-      </el-option>
-    </el-select>
-    <span>costCtr：</span>
+    <el-col :xs="24" :sm="12">
+      <el-form-item label="Area">
+        <el-select v-model="areaIndex" placeholder="请选择Area" @change="selectArea">
+          <el-option
+            v-for="(item,index) in allArea" :key="index" :label="item.AreaCode" :value="index">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-col>
+    <el-col :xs="24" :sm="12">
+      <el-form-item label="branch">
+        <el-select v-model="branchIndex" placeholder="请选择branch" @change="selectBranch">
+          <el-option
+            v-for="(item,index) in allBranch" :key="index" :label="item.BranchCode" :value="index">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-col>
+    <el-col :xs="24" :sm="12">
+      <el-form-item label="costCtr">
     <el-select v-model="costCtrIndex" placeholder="请选择costCtr" @change="selectCostCtr">
       <el-option
         v-for="(item,index) in allCostCtr" :key="index" :label="item.costCentreCode" :value="index">
       </el-option>
     </el-select>
+      </el-form-item>
+    </el-col>
   </el-row>
 </template>
 
@@ -147,4 +156,7 @@ export default {
 
 <style scoped>
 span{ color: #A0A0A0; }
+.el-select{
+  display: block;
+}
 </style>

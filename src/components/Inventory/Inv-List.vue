@@ -4,7 +4,9 @@
     <div id="searchInput">
       <h2>所属区域&gt;&gt;&gt;{{area}}/{{branch}}/{{costCtr}}</h2>
       <hr>
-      <AreaSelection @ensureArea="ensureAreaS" @ensureBranch="ensureBranch" @ensureCostCtr="ensureCostCtr" :default-area="area" :default-branch="branch" :default-cost="costCtr" ></AreaSelection>
+      <el-form ref="form" label-width="70px" label-position="left">
+        <AreaSelection @ensureArea="ensureAreaS" @ensureBranch="ensureBranch" @ensureCostCtr="ensureCostCtr" :default-area="area" :default-branch="branch" :default-cost="costCtr" ></AreaSelection>
+      </el-form>
     </div>
     <!-- 快速查询 -->
     <div id="fasttips">
@@ -35,7 +37,7 @@
     <div id="searchForm">
      <h2 @click="detailFlag = !detailFlag" style="cursor:pointer;">详细搜寻 <i class="el-icon-arrow-down"></i></h2>
       <hr>
-      <el-form :model="detailedFormDat" ref="detailedFormDat" label-width="100px" class="demo-ruleForm" v-show="detailFlag==true" id="complexForm">
+      <el-form :model="detailedFormDat" ref="detailedFormDat"  label-width="70px" label-position="left" class="demo-ruleForm" v-show="detailFlag==true" id="complexForm">
           <AreaSelection @ensureArea="ensureAreaS" @ensureBranch="ensureBranch" @ensureCostCtr="ensureCostCtr" :default-area="area" :default-branch="branch" :default-cost="costCtr" ></AreaSelection>
         <el-form-item label="资产种类">
           <el-col :xs="24" :sm="12" :md="12" :lg="12" >
@@ -143,8 +145,8 @@
       </div>
     </div>
     <!-- 转移模态框 -->
-    <el-dialog title="资产转移" :visible.sync="dialogFormVisible">
-      <el-form :model="detailedFormDat" ref="detailedFormDat">
+    <el-dialog title="资产转移" :visible.sync="dialogFormVisible" width="90%">
+      <el-form :model="detailedFormDat" ref="detailedFormDat"  label-width="70px" label-position="left">
         <el-form-item label="转移时间">
           <el-date-picker v-model="detailedFormDat.value1" type="date" placeholder="选择日期"></el-date-picker>
         </el-form-item>
@@ -162,7 +164,7 @@
       </div>
     </el-dialog>
     <!-- 弃置模态框 -->
-    <el-dialog title="弃置资产" :visible.sync="dialogDiscardVisible">
+    <el-dialog title="弃置资产" :visible.sync="dialogDiscardVisible" width="90%">
       <el-form :model="detailedFormDat" ref="detailedFormDat">
         <el-form-item label="弃置时间">
           <el-date-picker v-model="detailedFormDat.deliveryTime" type="date" placeholder="选择日期"></el-date-picker>
@@ -177,8 +179,8 @@
       </div>
     </el-dialog>
     <!-- 复制模态框 -->
-    <el-dialog title="弃置资产" :visible.sync="dialogCopyVisible">
-      <el-form :model="detailedFormDat" ref="detailedFormDat">
+    <el-dialog title="弃置资产" :visible.sync="dialogCopyVisible" width="90%">
+      <el-form :model="detailedFormDat" ref="detailedFormDat"  label-width="70px" label-position="left">
         <p>选择的资产：</p>
         <el-col :xs="8" :sm="6" :md="4" :lg="3" v-for="item in selectAsset" :key="item.citycode">
           <span style="color:red;" >{{item.citycode}}&nbsp;</span>
@@ -515,7 +517,6 @@ export default {
 p{ margin: 0; padding: 0;}
 #invList .el-dialog__body{ padding-top: 10px; }
 #invList{ width: 80%; margin: 0 auto; }
-#invList #searchInput{ height: 110px; }
 #invList h2{ font-size: 2.5vmin; color: #000; height: 20px; line-height: 40px; margin-top: 30px; padding: 0 10px; }
 #fasttips{ height: 150px; }
 #fasttips h2{ text-align: right; margin-top: 20px; }
