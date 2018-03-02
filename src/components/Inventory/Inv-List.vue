@@ -2,11 +2,9 @@
   <div id="invList">
     <!-- 顶部选择分行-->
     <div id="searchInput">
-      <h2>所属区域&gt;&gt;&gt;</h2>
+      <h2>所属区域&gt;&gt;&gt;{{area}}/{{branch}}/{{costCtr}}</h2>
       <hr>
-      <el-col :xs="24" :sm="16" :md="16" :lg="16" >
-        <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc" placeholder="Area/Branch/Cost Centre"></el-cascader>
-      </el-col>
+      <AreaSelection @ensureArea="ensureAreaS" @ensureBranch="ensureBranch" @ensureCostCtr="ensureCostCtr" :default-area="area" :default-branch="branch" :default-cost="costCtr" ></AreaSelection>
     </div>
     <!-- 快速查询 -->
     <div id="fasttips">
@@ -38,11 +36,7 @@
      <h2 @click="detailFlag = !detailFlag" style="cursor:pointer;">详细搜寻 <i class="el-icon-arrow-down"></i></h2>
       <hr>
       <el-form :model="detailedFormDat" ref="detailedFormDat" label-width="100px" class="demo-ruleForm" v-show="detailFlag==true" id="complexForm">
-        <el-form-item label="所属区域" >
-          <el-col :xs="24" :sm="16" :md="16" :lg="16" >
-          <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="detailedFormDat.showBranch" @change="branchChangeFuc" placeholder="Area/Branch/Cost Centre"></el-cascader>
-        </el-col>
-        </el-form-item>
+          <AreaSelection @ensureArea="ensureAreaS" @ensureBranch="ensureBranch" @ensureCostCtr="ensureCostCtr" :default-area="area" :default-branch="branch" :default-cost="costCtr" ></AreaSelection>
         <el-form-item label="资产种类">
           <el-col :xs="24" :sm="12" :md="12" :lg="12" >
              <el-cascader :options="belongBranchDat" :props="{value:'adcode',label:'city',children:''}" v-model="detailedFormDat.showBranch" @change="branchChangeFuc"></el-cascader>
@@ -154,11 +148,8 @@
         <el-form-item label="转移时间">
           <el-date-picker v-model="detailedFormDat.value1" type="date" placeholder="选择日期"></el-date-picker>
         </el-form-item>
-        <el-form-item label="目的分行">
-          <el-col :xs="24" :sm="16" :md="16" :lg="16" >
-            <el-cascader :options="destinationBranch" :props="{value:'adcode',label:'name',children:'districts'}" v-model="goToBranch" @change="branchChangeFuc"></el-cascader>
-          </el-col>
-        </el-form-item>
+        <span>目的分行:</span>
+          <AreaSelection @ensureArea="ensureAreaS" @ensureBranch="ensureBranch" @ensureCostCtr="ensureCostCtr" :default-area="area" :default-branch="branch" :default-cost="costCtr" ></AreaSelection>
         <el-form-item label="转移原因">
           <el-select v-model="detailedFormDat.deliveryTime" placeholder="请选择">
             <el-option v-for="item in reasons" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -192,7 +183,10 @@
         <el-col :xs="8" :sm="6" :md="4" :lg="3" v-for="item in selectAsset" :key="item.citycode">
           <span style="color:red;" >{{item.citycode}}&nbsp;</span>
         </el-col>
-        <el-cascader :options="belongBranchDat" change-on-select :props="{value:'adcode',label:'city',children:''}" v-model="showBranch" @change="branchChangeFuc"></el-cascader>
+        <el-col :xs="24" :sm="24" :md="24">
+          <span>所属分行：</span>
+          <AreaSelection @ensureArea="ensureAreaS" @ensureBranch="ensureBranch" @ensureCostCtr="ensureCostCtr" :default-area="area" :default-branch="branch" :default-cost="costCtr" ></AreaSelection>
+        </el-col>
         <el-form-item label="复制次数">
           <el-input type="number"></el-input>
         </el-form-item>
@@ -209,9 +203,14 @@
 </template>
 
 <script>
+import AreaSelection from './Common/Inv-AreaSelection.vue'
 export default {
   data () {
     return {
+      // 接收ensureArea(选择的地区ID)值
+      area: 1,
+      branch: 2,
+      costCtr: 2,
       // 收放详细搜寻
       detailFlag: false,
       tableOptsOffsetTop: 0,
@@ -295,7 +294,7 @@ export default {
         img: 2,
         deliveryTime: '',
         discardTime: '',
-        showBranch: ''
+        showBranch: []
       },
       // 查询到的资产列表
       assetList: [],
@@ -326,7 +325,17 @@ export default {
       }]
     }
   },
+  components: {AreaSelection},
   methods: {
+    ensureAreaS: function (msg) {
+      this.area = msg
+    },
+    ensureBranch: function (msg) {
+      this.branch = msg
+    },
+    ensureCostCtr: function (msg) {
+      this.costCtr = msg
+    },
     // 分行联动
     branchChangeFuc (value) {
       console.log(value)
